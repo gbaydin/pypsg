@@ -1,0 +1,13 @@
+*.pyc
+*.DS_Store
+/build
+/dist/
+/*.egg-info
+*.ipynb_checkpoints
+/*.ropeproject
+*.swp
+*.swo
+.ropeproject/
+#python stuff
+__pycache__/
+
