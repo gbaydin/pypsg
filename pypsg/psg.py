@@ -9,9 +9,10 @@ import numpy as np
 
 
 class PSG():
-    def __init__(self, server_url='https://psg.gsfc.nasa.gov/api.php', timeout_seconds=10):
+    def __init__(self, server_url='https://psg.gsfc.nasa.gov/api.php', timeout_seconds=10, key=None):
         self._server_url = server_url
         self._timeout_seconds = timeout_seconds
+        self._key = key
         default_config_file_name = os.path.join(pypsg.__resource_path__, 'default.config')
         self.default_config_str = None
         with open(default_config_file_name) as f:
@@ -56,7 +57,10 @@ class PSG():
                 config_str = self.config_dict_to_str(config)
 
         time_start = time.time()
-        reply = requests.post(self._server_url, data={'file':config_str}, timeout=self._timeout_seconds)
+        data = {'file':config_str}
+        if self._key is not None:
+            data['key'] = self._key
+        reply = requests.post(self._server_url, data=data, timeout=self._timeout_seconds)
         time_duration = time.time() - time_start
         if reply.status_code == requests.codes.ok:
             reply_raw = reply.text
