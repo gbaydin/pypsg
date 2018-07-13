@@ -1,6 +1,7 @@
 import pypsg
 import os
 import requests
+from pkg_resources import resource_string
 from io import StringIO
 from collections import OrderedDict
 import re
@@ -14,9 +15,7 @@ class PSG():
         self._timeout_seconds = timeout_seconds
         self._key = key
         default_config_file_name = os.path.join(pypsg.__resource_path__, 'default.config')
-        self.default_config_str = None
-        with open(default_config_file_name) as f:
-            self.default_config_str = f.read()
+        self.default_config_str = str(resource_string(__name__, 'resources/default.config'))
         self.default_config = self.config_str_to_dict(self.default_config_str)
 
         print('Testing connection to PSG at {} ...'.format(self._server_url))

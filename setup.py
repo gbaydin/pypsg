@@ -29,6 +29,8 @@ setup(
     author_email='gunes@robots.ox.ac.uk',
     packages=find_packages(),
     install_requires=['numpy'],
+    include_package_data=True,
+    package_data={'': ['*.config']},
     url='https://gitlab.com/frontierdevelopmentlab/astrobiology/pypsg',
     classifiers=['Development Status :: 4 - Beta', 'License :: OSI Approved :: BSD License', 'Programming Language :: Python :: 3.5'],
     license='BSD',
