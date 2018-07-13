@@ -15,7 +15,7 @@ class PSG():
         self._timeout_seconds = timeout_seconds
         self._key = key
         default_config_file_name = os.path.join(pypsg.__resource_path__, 'default.config')
-        self.default_config_str = str(resource_string(__name__, 'resources/default.config'))
+        self.default_config_str = resource_string(__name__, 'resources/default.config').decode('utf-8')
         self.default_config = self.config_str_to_dict(self.default_config_str)
 
         print('Testing connection to PSG at {} ...'.format(self._server_url))
