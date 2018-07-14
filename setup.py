@@ -28,7 +28,7 @@ setup(
     author='Atilim Gunes Baydin',
     author_email='gunes@robots.ox.ac.uk',
     packages=find_packages(),
-    install_requires=['numpy'],
+    install_requires=['numpy', 'requests>=2.19.1'],
     include_package_data=True,
     package_data={'': ['*.config']},
     url='https://gitlab.com/frontierdevelopmentlab/astrobiology/pypsg',
