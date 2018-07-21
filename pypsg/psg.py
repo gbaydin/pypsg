@@ -1,5 +1,3 @@
-import pypsg
-import os
 import requests
 from pkg_resources import resource_string
 from io import StringIO
@@ -10,16 +8,15 @@ import numpy as np
 
 
 class PSG():
-    def __init__(self, server_url='https://psg.gsfc.nasa.gov/api.php', timeout_seconds=10, key=None):
+    def __init__(self, server_url='https://psg.gsfc.nasa.gov/api.php', timeout_seconds=10, api_key=None):
         self._server_url = server_url
         self._timeout_seconds = timeout_seconds
-        self._key = key
-        default_config_file_name = os.path.join(pypsg.__resource_path__, 'default.config')
+        self._api_key = api_key
         self.default_config_str = resource_string(__name__, 'resources/default.config').decode('utf-8')
         self.default_config = self.config_str_to_dict(self.default_config_str)
 
         print('Testing connection to PSG at {} ...'.format(self._server_url))
-        reply = self.run(self.default_config)
+        self.run(self.default_config)
         print('Connected to PSG with success.')
 
     @staticmethod
@@ -51,20 +48,20 @@ class PSG():
     def run(self, config=None, config_str=None):
         if config_str is None:
             if config is None:
-                raise ArgumentError('Expecting either config or config_str.')
+                raise ValueError('Expecting either config or config_str.')
             else:
                 config_str = self.config_dict_to_str(config)
 
         time_start = time.time()
-        data = {'file':config_str}
-        if self._key is not None:
-            data['key'] = self._key
+        data = {'file': config_str}
+        if self._api_key is not None:
+            data['key'] = self._api_key
         reply = requests.post(self._server_url, data=data, timeout=self._timeout_seconds)
         time_duration = time.time() - time_start
         if reply.status_code == requests.codes.ok:
             reply_raw = reply.text
         else:
-            raise RuntimeError('Unexpected HTTP status code received from PSG: {}'.format(r.status_code))
+            raise RuntimeError('Unexpected HTTP status code received from PSG: {}'.format(reply.status_code))
 
         reply_header = []
         reply_data = []

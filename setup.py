@@ -1,5 +1,5 @@
 import os
-import sys
+# import sys
 from setuptools import setup, find_packages
 PACKAGE_NAME = 'pypsg'
 # MINIMUM_PYTHON_VERSION = 3, 5
@@ -10,6 +10,7 @@ PACKAGE_NAME = 'pypsg'
 #     if sys.version_info < MINIMUM_PYTHON_VERSION:
 #         sys.exit("Python {}.{}+ is required.".format(*MINIMUM_PYTHON_VERSION))
 
+
 def read_package_variable(key):
     """Read the value of a variable from the package without importing."""
     module_path = os.path.join(PACKAGE_NAME, '__init__.py')
@@ -19,6 +20,7 @@ def read_package_variable(key):
             if parts and parts[0] == key:
                 return parts[-1].strip("'")
     assert 0, "'{0}' not found in '{1}'".format(key, module_path)
+
 
 # check_python_version()
 setup(
