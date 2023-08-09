@@ -1,3 +1,4 @@
+import os
 import requests
 from pkg_resources import resource_string
 from io import StringIO
@@ -8,11 +9,17 @@ import numpy as np
 
 
 class PSG():
-    def __init__(self, server_url='https://psg.gsfc.nasa.gov/api.php', timeout_seconds=10, api_key=None):
+    def __init__(self, server_url='https://psg.gsfc.nasa.gov/api.php', 
+                       timeout_seconds=10, api_key=None, 
+                       default_config='resources/default.config'):
         self._server_url = server_url
         self._timeout_seconds = timeout_seconds
         self._api_key = api_key
-        self.default_config_str = resource_string(__name__, 'resources/default.config').decode('utf-8')
+        if os.path.isabs(default_config):
+            with open(default_config, "r") as foo:
+                self.default_config_str = foo.read()
+        else:
+            self.default_config_str = resource_string(__name__, default_config).decode('utf-8')
         self.default_config = self.config_str_to_dict(self.default_config_str)
 
         print('Testing connection to PSG at {} ...'.format(self._server_url))
@@ -45,7 +52,7 @@ class PSG():
             ret.append('<{}>{}'.format(key, str(value)))
         return '\n'.join(ret)
 
-    def run(self, config=None, config_str=None):
+    def run(self, config=None, config_str=None, watm=None, otype=None):
         if config_str is None:
             if config is None:
                 raise ValueError('Expecting either config or config_str.')
@@ -56,6 +63,10 @@ class PSG():
         data = {'file': config_str}
         if self._api_key is not None:
             data['key'] = self._api_key
+        if watm is not None:
+            data['watm'] = watm
+        if otype is not None:
+            data['type'] = otype
         reply = requests.post(self._server_url, data=data, timeout=self._timeout_seconds)
         time_duration = time.time() - time_start
         if reply.status_code == requests.codes.ok:
@@ -72,6 +83,10 @@ class PSG():
                 reply_data.append(line)
 
         reply_header_str = '\n'.join(reply_header)
-        reply_data_np = np.loadtxt(StringIO('\n'.join(reply_data)))
+        try:
+            reply_data_np = np.loadtxt(StringIO('\n'.join(reply_data)))
+            return {'header': reply_header_str, 'spectrum': reply_data_np, 'duration_seconds': time_duration}
+        except:
+            return {'config': reply_raw}
 
-        return {'header': reply_header_str, 'spectrum': reply_data_np, 'duration_seconds': time_duration}
+
